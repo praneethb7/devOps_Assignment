@@ -1,0 +1,15 @@
+# Deliberately broken: the selector says `app: web-backend`, the running Pods are `app: web`.
+# Nothing matches, so the Service gets a ClusterIP but an empty EndpointSlice.
+apiVersion: v1
+kind: Service
+metadata:
+  name: broken-service
+spec:
+  type: ClusterIP
+  selector:
+    app: web-backend   # BUG: no Pod carries this label
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

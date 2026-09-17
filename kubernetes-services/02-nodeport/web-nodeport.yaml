@@ -1,0 +1,15 @@
+# ClusterIP plus a port opened on every node, so traffic from outside can get in.
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      nodePort: 30080   # must be in 30000-32767; omit it and Kubernetes picks one
+      protocol: TCP

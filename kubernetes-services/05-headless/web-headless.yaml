@@ -1,0 +1,15 @@
+# clusterIP: None -> no virtual IP and no kube-proxy rules.
+# DNS answers with the Pod IPs themselves, and the StatefulSet gets per-Pod names.
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-headless
+spec:
+  clusterIP: None
+  selector:
+    app: web-stateful
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

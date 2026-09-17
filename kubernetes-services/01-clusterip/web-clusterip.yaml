@@ -1,0 +1,14 @@
+# Default Service type: a stable virtual IP reachable only from inside the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-clusterip
+spec:
+  type: ClusterIP
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 8080        # the port clients inside the cluster connect to
+      targetPort: http  # the named containerPort on the Pods (80)
+      protocol: TCP
