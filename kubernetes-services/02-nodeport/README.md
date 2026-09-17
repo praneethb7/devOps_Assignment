@@ -16,6 +16,8 @@ cannot share it.
 kubectl apply -f 02-nodeport/web-nodeport.yaml
 ```
 
+![web-nodeport.yaml](screenshots/web-nodeport-yaml.png)
+
 ## What it got
 
 ```
@@ -47,6 +49,8 @@ kubectl exec client -- curl -s -o /dev/null -w "HTTP %{http_code} via %{remote_i
 minikube ssh -- "curl -sI http://192.168.49.2:30080 | head -1"
 curl -s -m 3 http://192.168.49.2:30080
 ```
+
+![the Service, then the same app from inside the cluster, inside the node, and from the laptop](screenshots/nodeport-terminal.png)
 
 The first two are the type working as designed. The third is not a NodePort failure: with the
 Docker driver on macOS, `192.168.49.2` is an address inside Docker's Linux VM and the Mac has

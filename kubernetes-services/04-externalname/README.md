@@ -18,6 +18,8 @@ example.com`, and nothing else. No `ports`, because there is nothing to proxy.
 kubectl apply -f 04-externalname/web-externalname.yaml
 ```
 
+![web-externalname.yaml](screenshots/web-externalname-yaml.png)
+
 ## Nothing where the other types have something
 
 ```
@@ -42,7 +44,7 @@ Address:	10.96.0.10:53
 
 web-externalname.default.svc.cluster.local	canonical name = example.com
 Name:	example.com
-Address: 2606:4700:9ae5:72db:f2de:de0:ef6b:ff98
+Address: 2606:4700:9ae5:72db:f2de:b4f:ef6b:ff98
 
 web-externalname.default.svc.cluster.local	canonical name = example.com
 Name:	example.com
@@ -68,6 +70,8 @@ HTTP 403
 kubectl exec client -- curl -s -o /dev/null -w "HTTP %{http_code} via %{remote_ip}:%{remote_port}\n" -H "Host: example.com" http://web-externalname/
 kubectl exec client -- curl -s -o /dev/null -w "HTTP %{http_code}\n" http://web-externalname/
 ```
+
+![no ClusterIP and no EndpointSlice, the CNAME to example.com, and the 200/403 pair](screenshots/externalname-terminal.png)
 
 Same connection, same server, two different answers. curl sets `Host: web-externalname` by
 default, and the server on the other end has never heard of that name, so it refuses with 403.

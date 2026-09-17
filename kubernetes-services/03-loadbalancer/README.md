@@ -17,6 +17,8 @@ No `nodePort` is given, so Kubernetes allocates one.
 kubectl apply -f 03-loadbalancer/web-loadbalancer.yaml
 ```
 
+![web-loadbalancer.yaml](screenshots/web-loadbalancer-yaml.png)
+
 ## Pending, on purpose
 
 ```
@@ -47,6 +49,8 @@ HTTP/1.1 200 OK
 kubectl exec client -- curl -s -o /dev/null -w "HTTP %{http_code} via %{remote_ip}:%{remote_port}\n" http://web-loadbalancer:8080
 minikube ssh -- "curl -sI http://192.168.49.2:32378 | head -1"
 ```
+
+![EXTERNAL-IP pending while the ClusterIP and node port underneath both answer](screenshots/loadbalancer-terminal.png)
 
 Compare with [02-nodeport](../02-nodeport/): identical behaviour, and the node port here was
 auto-allocated as `32378` rather than pinned. The three layers, bottom to top, are ClusterIP →

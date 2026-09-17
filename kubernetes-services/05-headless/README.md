@@ -18,6 +18,8 @@ publish a DNS name per replica.
 kubectl apply -f 05-headless/web-headless.yaml -f 05-headless/web-statefulset.yaml
 ```
 
+![web-headless.yaml and web-statefulset.yaml](screenshots/web-headless-yaml.png)
+
 ```
 ### the StatefulSet Pods and their IPs
 NAME             IP
@@ -50,9 +52,9 @@ into forwarding rules. Here, CoreDNS turns it into A records.
 ```
 ### nslookup of the headless Service
 Name:	web-headless.default.svc.cluster.local
-Address: 10.244.0.9
-Name:	web-headless.default.svc.cluster.local
 Address: 10.244.0.8
+Name:	web-headless.default.svc.cluster.local
+Address: 10.244.0.9
 Name:	web-headless.default.svc.cluster.local
 Address: 10.244.0.10
 
@@ -86,7 +88,7 @@ name its peers can dial, and a client that must talk to one specific member can.
 
 ```
 ### curl the headless name
-HTTP 200 via 10.244.0.10:80
+HTTP 200 via 10.244.0.8:80
 
 ### curl one specific Pod by name
 HTTP 200 via 10.244.0.9:80
@@ -96,6 +98,8 @@ HTTP 200 via 10.244.0.9:80
 kubectl exec client -- curl -s -o /dev/null -w "HTTP %{http_code} via %{remote_ip}:%{remote_port}\n" http://web-headless:80
 kubectl exec client -- curl -s -o /dev/null -w "HTTP %{http_code} via %{remote_ip}:%{remote_port}\n" http://web-stateful-1.web-headless:80
 ```
+
+![Pod IPs instead of a virtual IP, a DNS name per StatefulSet replica, and curls landing on Pod IPs](screenshots/headless-terminal.png)
 
 Two things to notice. `remote_ip` is a **Pod** IP, not a Service IP — the opposite of the
 ClusterIP result, and the clearest proof that nothing is proxying. And the port is `80`, not

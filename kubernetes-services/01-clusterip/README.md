@@ -19,6 +19,8 @@ door clients dial, `targetPort` is where the container actually listens.
 kubectl apply -f 01-clusterip/web-clusterip.yaml
 ```
 
+![web-clusterip.yaml](screenshots/web-clusterip-yaml.png)
+
 ## The Service and its endpoints
 
 ```
@@ -70,26 +72,32 @@ Name:	web-clusterip.default.svc.cluster.local
 Address: 10.96.6.96
 ```
 
+![the Service and its EndpointSlice, all three curls, the nslookup, and the timeout from the laptop](screenshots/clusterip-terminal.png)
+
 ## Load balancing is real
 
 Since curl always reports the VIP, the way to see which Pod served a request is to look at
 the Pods. Thirty requests to the Service, counted in each Pod's access log:
 
 ```
-### 30 requests to the Service, counted per Pod (delta over the run)
-web-7c9cd446bb-2pncn     13 requests
-web-7c9cd446bb-kcprj     13 requests
-web-7c9cd446bb-sbpvl      4 requests
+### requests logged per Pod, before and after 30 curls
+                       before   after   delta
+web-7c9cd446bb-2pncn       30      41      11
+web-7c9cd446bb-kcprj       35      42       7
+web-7c9cd446bb-sbpvl       20      32      12
 ```
 
 ```bash
 kubectl exec client -- sh -c 'for i in $(seq 1 30); do curl -s -o /dev/null http://web-clusterip:8080; done'
-kubectl logs <pod> | grep -c 'GET /'
+for p in $(kubectl get pods -l app=web -o name); do echo "$p $(kubectl logs $p | grep -c 'GET /')"; done
 ```
 
-Spread across all three, but not evenly. kube-proxy picks an endpoint at random per
-connection; it is a Layer 4 coin flip, not a round robin, so over thirty requests the split
-is lumpy. That is expected and worth knowing before someone files a bug about it.
+![counting each Pod's access log before and after 30 requests](screenshots/clusterip-loadbalancing.png)
+
+Counting the delta rather than the raw totals matters — these Pods had already served the
+earlier checks. The 30 new requests split 11/7/12: spread across all three, but not evenly.
+kube-proxy picks an endpoint at random per connection; it is a Layer 4 coin flip, not a round
+robin, so over thirty requests the split is lumpy. That is expected and worth knowing before someone files a bug about it.
 
 ## From the laptop: two ways, one of which fails
 
@@ -118,6 +126,8 @@ Forwarding from [::1]:8080 -> 80
 HTTP 200
 <title>Welcome to nginx!</title>
 ```
+
+![port-forward serving the Pods on localhost:8080](screenshots/clusterip-portforward.png)
 
 Worth reading the arrow carefully: `127.0.0.1:8080 -> 80`. `port-forward` on a Service resolves
 the Service's endpoints and forwards to a *Pod's* port 80 — it does not go through the virtual

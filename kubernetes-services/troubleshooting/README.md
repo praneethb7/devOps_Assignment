@@ -15,15 +15,15 @@ kubectl apply -f troubleshooting/empty-endpoints.yaml
 ```
 ### kubectl get svc broken-service -o wide
 NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
-broken-service   ClusterIP   10.109.27.214   <none>        8080/TCP   5s    app=web-backend
+broken-service   ClusterIP   10.103.234.221  <none>        8080/TCP   5s    app=web-backend
 
 ### kubectl get endpointslices -l kubernetes.io/service-name=broken-service
 NAME                   ADDRESSTYPE   PORTS     ENDPOINTS   AGE
-broken-service-ml5ph   IPv4          <unset>   <unset>     5s
+broken-service-h8fhz   IPv4          <unset>   <unset>     5s
 
 ### kubectl describe svc broken-service
 Selector:                 app=web-backend
-IP:                       10.109.27.214
+IP:                       10.103.234.221
 TargetPort:               http/TCP
 Endpoints:
 ```
@@ -64,13 +64,15 @@ controller has nothing to write.
 ### fix it and look again
 service/broken-service patched
 NAME                   ADDRESSTYPE   PORTS   ENDPOINTS                          AGE
-broken-service-ml5ph   IPv4          80      10.244.0.3,10.244.0.6,10.244.0.5   8s
+broken-service-h8fhz   IPv4          80      10.244.0.3,10.244.0.6,10.244.0.5   3s
 HTTP 200
 ```
 
 ```bash
 kubectl patch svc broken-service -p '{"spec":{"selector":{"app":"web"}}}'
 ```
+
+![an empty EndpointSlice, the label mismatch that caused it, and endpoints appearing after the patch](screenshots/empty-endpoints-terminal.png)
 
 Endpoints appear within seconds of the selector matching — the controller is watching, and no
 restart of anything is needed.

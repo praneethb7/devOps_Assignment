@@ -36,6 +36,8 @@ by number — rename or renumber the container port and the Services keep workin
 kubectl apply -f web-deployment.yaml -f clients.yaml
 ```
 
+![the Deployment and the two helper Pod manifests](screenshots/web-deployment-yaml.png)
+
 ```
 NAME                   READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
 client                 1/1     Running   0          7m8s   10.244.0.4   minikube   <none>           <none>
@@ -44,6 +46,11 @@ web-7c9cd446bb-2pncn   1/1     Running   0          7m8s   10.244.0.3   minikube
 web-7c9cd446bb-kcprj   1/1     Running   0          7m8s   10.244.0.5   minikube   <none>           <none>
 web-7c9cd446bb-sbpvl   1/1     Running   0          7m8s   10.244.0.6   minikube   <none>           <none>
 ```
+
+![the Deployment, every Pod with its IP, and a Pod's resolv.conf](screenshots/workload.png)
+
+The screenshot was taken later in the run, so the three `web-stateful-*` Pods from
+[05-headless](05-headless/) are present too, along with the `resolv.conf` discussed below.
 
 Three Pods, three IPs, and every one of them is disposable. That is the problem Services
 exist to solve: a client that hard-codes `10.244.0.3` breaks the moment that Pod is
