@@ -1,0 +1,16 @@
+# A Service with NO selector. Kubernetes allocates the ClusterIP and programs
+# kube-proxy as usual, but no controller will ever populate its endpoints --
+# because there is no selector to match Pods with. You supply them by hand.
+#
+# The use case is fronting something that is not a Pod: a managed database, a
+# VM, an appliance. Unlike ExternalName this keeps a real cluster IP, so TLS
+# and Host headers see a normal in-cluster address.
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-legacy-db
+spec:
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306

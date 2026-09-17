@@ -1,0 +1,15 @@
+# The hand-written backend list. The name MUST equal the Service name -- that
+# is the only thing tying the two together.
+#
+# `Endpoints` is the original API and is deprecated in favour of EndpointSlice,
+# but it still works and the control plane mirrors it into an EndpointSlice
+# automatically, which is what `kubectl get endpointslices` shows afterwards.
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: external-legacy-db
+subsets:
+  - addresses:
+      - ip: 192.168.1.150      # a database outside the cluster
+    ports:
+      - port: 3306
