@@ -1,0 +1,15 @@
+# Note the selector: app only. It deliberately does NOT match `track`, so
+# stable and canary Pods share one endpoint list. The traffic split is
+# therefore just the pod ratio -- it has no finer control than that.
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-canary-service
+spec:
+  type: NodePort
+  selector:
+    app: myapp-canary
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30030

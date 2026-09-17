@@ -1,0 +1,24 @@
+# Blue = the live environment (v1). Runs at full capacity alongside Green.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+      slot: blue
+  template:
+    metadata:
+      labels:
+        app: myapp
+        slot: blue
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          command: ["/bin/sh","-c","echo '<p>BLUE ENVIRONMENT</p>' > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports: [{containerPort: 80}]
+          resources:
+            requests: {cpu: "10m", memory: "16Mi"}

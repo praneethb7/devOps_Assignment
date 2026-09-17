@@ -1,0 +1,25 @@
+# Canary: 1 Pod of v2. The Service selects on app only, NOT track, so
+# both Deployments land in the same endpoint pool -- 1 in 10 = ~10%.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp-canary
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: myapp-canary
+        track: canary
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          command: ["/bin/sh","-c","echo 'CANARY v2' > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports: [{containerPort: 80}]
+          resources:
+            requests: {cpu: "10m", memory: "16Mi"}

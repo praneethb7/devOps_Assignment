@@ -1,0 +1,12 @@
+# Phase: Succeeded -- exits 0 with restartPolicy: Never, so it stays
+# Completed rather than restarting.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: worker
+      image: busybox:1.36
+      command: ["sh", "-c", "echo 'work finished cleanly'; exit 0"]

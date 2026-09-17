@@ -1,0 +1,11 @@
+# The API object is created successfully in etcd -- the failure is at the
+# runtime layer, when the kubelet cannot pull a tag that does not exist.
+# ErrImagePull on the first attempt, then ImagePullBackOff once it backs off.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-image-error
+spec:
+  containers:
+    - name: ghost
+      image: nginx:this-tag-does-not-exist-9999

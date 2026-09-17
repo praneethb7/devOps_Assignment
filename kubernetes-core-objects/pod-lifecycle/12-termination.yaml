@@ -1,0 +1,16 @@
+# Graceful shutdown: the container traps SIGTERM and takes 10s to clean up.
+# kubectl delete blocks for that whole window instead of killing instantly --
+# this is the mechanism that lets a server drain in-flight requests.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-termination
+spec:
+  terminationGracePeriodSeconds: 30
+  containers:
+    - name: graceful
+      image: busybox:1.36
+      command:
+        - sh
+        - -c
+        - 'trap "echo caught SIGTERM, draining...; sleep 10; echo drained; exit 0" TERM; echo serving; while true; do sleep 1; done'

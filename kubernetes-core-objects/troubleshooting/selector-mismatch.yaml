@@ -1,0 +1,23 @@
+# Drill 2: rejected by the API server at admission time, before anything runs.
+# spec.selector.matchLabels says `app: selector-demo` but the Pod template
+# labels say `app: selector-demo-typo`. A Deployment whose selector cannot
+# match its own Pods is invalid, so the API server refuses it outright.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selector-error-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: selector-demo
+  template:
+    metadata:
+      labels:
+        app: selector-demo-typo    # <-- does not match the selector above
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          resources:
+            requests: {cpu: "10m", memory: "16Mi"}

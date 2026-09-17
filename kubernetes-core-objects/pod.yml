@@ -1,0 +1,22 @@
+# The smallest deployable unit, with the four mandatory top-level fields:
+# apiVersion, kind, metadata, spec.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx-standalone
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine
+      ports:
+        - name: http
+          containerPort: 80
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "16Mi"
+        limits:
+          cpu: "100m"
+          memory: "64Mi"

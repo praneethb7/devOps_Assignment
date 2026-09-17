@@ -1,0 +1,29 @@
+# Drill 1: a rollout that stalls instead of failing loudly.
+# maxUnavailable: 0 means the old Pods are never torn down until a new one
+# goes Ready -- and the new one never will, because the tag does not exist.
+# Result: the app keeps serving on v1 while the rollout hangs indefinitely.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-backend
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: yatri-backend
+  template:
+    metadata:
+      labels:
+        app: yatri-backend
+    spec:
+      containers:
+        - name: api
+          image: nginx:1.27-alpine
+          ports: [{containerPort: 80}]
+          resources:
+            requests: {cpu: "10m", memory: "16Mi"}

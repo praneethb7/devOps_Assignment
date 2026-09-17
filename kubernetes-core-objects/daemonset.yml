@@ -1,0 +1,32 @@
+# A DaemonSet runs exactly one Pod per eligible node -- the pattern for
+# node-level agents: log shippers, metrics exporters, security sensors.
+# It has no `replicas` field; the node count is the replica count.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      tolerations:
+        # Without this the agent would skip control-plane nodes, which is
+        # exactly where you still want telemetry.
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: node-exporter
+          image: prom/node-exporter:v1.8.2
+          ports:
+            - name: metrics
+              containerPort: 9100
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "32Mi"

@@ -1,0 +1,18 @@
+# Liveness probe: self-healing. The file is deleted after 20s, the probe then
+# fails three times in a row, and the kubelet restarts the container --
+# RESTARTS increments while the Pod name stays the same.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-liveness
+spec:
+  containers:
+    - name: self-healing
+      image: busybox:1.36
+      command: ["sh", "-c", "touch /tmp/alive; sleep 20; rm /tmp/alive; sleep 3600"]
+      livenessProbe:
+        exec:
+          command: ["cat", "/tmp/alive"]
+        initialDelaySeconds: 5
+        periodSeconds: 3
+        failureThreshold: 3

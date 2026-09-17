@@ -1,0 +1,30 @@
+# v1 baseline. maxSurge: 1 / maxUnavailable: 0 means the rollout may add one
+# extra Pod but must never drop below the full replica count -- 100% capacity
+# throughout, which is what makes it zero-downtime.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-rolling
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: app-rolling
+  template:
+    metadata:
+      labels:
+        app: app-rolling
+        version: v1
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          command: ["/bin/sh","-c","echo '<h1>VERSION: v1</h1>' > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'"]
+          ports: [{containerPort: 80}]
+          resources:
+            requests: {cpu: "10m", memory: "16Mi"}
