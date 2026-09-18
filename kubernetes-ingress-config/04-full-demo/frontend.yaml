@@ -1,0 +1,48 @@
+# The public tier. Plain nginx serving a static page -- it needs no ConfigMap
+# or Secret, which is the point of splitting it from the backend.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-frontend
+  labels:
+    app: yatri-app
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: yatri-app
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: yatri-app
+        tier: frontend
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          command:
+            - /bin/sh
+            - -c
+            - echo '<title>Yatri frontend</title><h1>Yatri frontend (tier=frontend)</h1>' > /usr/share/nginx/html/index.html && exec nginx -g 'daemon off;'
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests: {cpu: "10m", memory: "16Mi"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatri-frontend-svc
+  labels:
+    app: yatri-app
+spec:
+  type: ClusterIP
+  selector:
+    app: yatri-app
+    tier: frontend
+  ports:
+    - port: 80
+      targetPort: http

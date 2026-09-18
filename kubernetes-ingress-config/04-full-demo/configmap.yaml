@@ -1,0 +1,14 @@
+# Non-sensitive configuration, kept out of the image so the same image can run
+# in dev, staging and production with different values.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yatri-app-config
+  labels:
+    app: yatri-app
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  PORT: "8080"
+  DEFAULT_CURRENCY: "INR"
+  MAX_BOOKING_DAYS: "90"

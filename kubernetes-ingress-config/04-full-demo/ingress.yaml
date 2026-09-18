@@ -1,0 +1,38 @@
+# Path-based routing under ONE hostname.
+#
+# The regex captures matter: path /api(/|$)(.*) puts everything after /api into
+# capture group 2, and rewrite-target /$2 replaces the whole path with it. So
+# a request for /api/bookings reaches the backend as /bookings -- the backend
+# never has to know it is mounted under /api.
+#
+# Without the rewrite the backend would receive /api/bookings and 404.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yatri-ingress
+  labels:
+    app: yatri-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: yatri.local
+      http:
+        paths:
+          # most specific first -- /api must be matched before /
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yatri-backend-svc
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: yatri-frontend-svc
+                port:
+                  number: 80

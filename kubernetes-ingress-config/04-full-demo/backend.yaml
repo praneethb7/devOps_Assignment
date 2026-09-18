@@ -1,0 +1,85 @@
+# Two documents in one file, separated by --- : the Deployment and the Service
+# that fronts it. Keeping them together means one `kubectl apply -f` creates
+# both, and neither can be forgotten.
+#
+# This is the task that matters: the container reads bulk, non-sensitive config
+# with envFrom (every ConfigMap key becomes an env var) and individual secret
+# keys with valueFrom.secretKeyRef (each one named explicitly).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-backend
+  labels:
+    app: yatri-app
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: yatri-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: yatri-app
+        tier: backend
+    spec:
+      containers:
+        - name: api
+          image: python:3.12-alpine
+          envFrom:
+            # bulk import: every key in the ConfigMap becomes an env var
+            - configMapRef:
+                name: yatri-app-config
+          env:
+            # granular import: name each secret key explicitly
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: yatri-db-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yatri-db-secret
+                  key: POSTGRES_PASSWORD
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests: {cpu: "20m", memory: "48Mi"}
+          command:
+            - python
+            - -c
+            - |
+              import http.server, os
+              KEYS = ["ENVIRONMENT", "LOG_LEVEL", "DEFAULT_CURRENCY",
+                      "MAX_BOOKING_DAYS", "POSTGRES_USER", "POSTGRES_PASSWORD"]
+              class H(http.server.BaseHTTPRequestHandler):
+                  def do_GET(self):
+                      lines = ["yatri-backend API", "path: %s" % self.path, ""]
+                      lines += ["%s: %s" % (k, os.getenv(k, "<unset>")) for k in KEYS]
+                      body = ("\n".join(lines) + "\n").encode()
+                      self.send_response(200)
+                      self.send_header("Content-Type", "text/plain")
+                      self.send_header("Content-Length", str(len(body)))
+                      self.end_headers()
+                      self.wfile.write(body)
+                  def log_message(self, *a):
+                      pass
+              http.server.HTTPServer(("", 8080), H).serve_forever()
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatri-backend-svc
+  labels:
+    app: yatri-app
+spec:
+  type: ClusterIP
+  selector:
+    app: yatri-app
+    tier: backend
+  ports:
+    - port: 8080
+      targetPort: http

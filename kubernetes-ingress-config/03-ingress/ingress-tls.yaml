@@ -1,0 +1,55 @@
+# Hybrid routing: host-based AND path-based in one resource, with TLS.
+#
+# - portal.campus.local  ->  frontend on /          (host-based)
+# - api.campus.local     ->  backend  on /api/...   (host + path, rewritten)
+#                        ->  frontend on /          (anything else on that host)
+#
+# Both hostnames resolve to the SAME ingress controller IP. The controller
+# picks the rule set by reading the HTTP Host header (or the TLS SNI name on
+# HTTPS), which is why one load balancer can serve any number of domains.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: campus-ingress-tls
+  labels:
+    app: yatri-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    # Terminates TLS for BOTH hostnames using one certificate. The names here
+    # must appear in the cert (CN or SAN) or clients get a name mismatch.
+    - hosts:
+        - portal.campus.local
+        - api.campus.local
+      secretName: campus-tls-cert
+  rules:
+    - host: portal.campus.local
+      http:
+        paths:
+          - path: /()(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yatri-frontend-svc
+                port:
+                  number: 80
+    - host: api.campus.local
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yatri-backend-svc
+                port:
+                  number: 8080
+          - path: /()(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yatri-frontend-svc
+                port:
+                  number: 80

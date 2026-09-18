@@ -1,0 +1,4 @@
+# Task 13 generates a self-signed keypair locally. The private key must never
+# be committed -- regenerate it with the openssl command in the README.
+tls.key
+tls.crt
