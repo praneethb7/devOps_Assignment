@@ -1,0 +1,28 @@
+# FIXED: create the Secret the Pod references, then the mount succeeds.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yatri-db-credentials-missing
+type: Opaque
+stringData:
+  username: yatri_app
+  password: not-a-real-password
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-stuck-creating
+  labels: { app: yatri-stuck-creating }
+spec:
+  volumes:
+    - name: creds
+      secret:
+        secretName: yatri-db-credentials-missing
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: creds
+          mountPath: /etc/creds
+          readOnly: true

@@ -1,0 +1,28 @@
+# FIXED: targetPort points at the port the container actually listens on.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-ports
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: yatri-ports }
+  template:
+    metadata:
+      labels: { app: yatri-ports }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatri-ports
+spec:
+  selector: { app: yatri-ports }
+  ports:
+    - port: 80
+      targetPort: 80

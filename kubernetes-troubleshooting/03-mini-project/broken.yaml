@@ -1,0 +1,37 @@
+# Mini project: one Deployment and one Service with THREE independent
+# faults planted in it. Nothing in the manifest says which.
+#
+#   1. image tag does not exist                 -> ImagePullBackOff
+#   2. Service selector does not match the Pods -> empty Endpoints
+#   3. targetPort is not the container's port    -> refused connections
+#
+# Diagnose with kubectl only, then compare against fixed.yaml.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-checkout
+  namespace: yatri-triage
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: yatri-checkout }
+  template:
+    metadata:
+      labels: { app: yatri-checkout }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine-nonexistent
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatri-checkout
+  namespace: yatri-triage
+spec:
+  selector: { app: checkout }
+  ports:
+    - port: 80
+      targetPort: 8080

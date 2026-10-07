@@ -1,0 +1,10 @@
+# BROKEN: a private repository with no imagePullSecret.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-private
+  labels: { app: yatri-private }
+spec:
+  containers:
+    - name: app
+      image: ghcr.io/praneethb7/yatri-private-not-public:v1

@@ -1,0 +1,30 @@
+# FIXED: the ConfigMap carries every key the Pod asks for.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yatri-config
+data:
+  LOG_LEVEL: INFO
+  DB_HOST: yatri-db.storage-demo.svc.cluster.local
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-badconfig
+  labels: { app: yatri-badconfig }
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo LOG_LEVEL=$LOG_LEVEL DB_HOST=$DB_HOST; sleep 3600"]
+      env:
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: yatri-config
+              key: LOG_LEVEL
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: yatri-config
+              key: DB_HOST

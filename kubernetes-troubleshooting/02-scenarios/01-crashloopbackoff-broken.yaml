@@ -1,0 +1,11 @@
+# BROKEN: the container runs a command that exits 1 immediately.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-crashloop
+  labels: { app: yatri-crashloop }
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo 'config file missing, refusing to start'; exit 1"]

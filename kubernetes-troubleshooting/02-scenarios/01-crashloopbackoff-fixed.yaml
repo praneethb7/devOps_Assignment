@@ -1,0 +1,11 @@
+# FIXED: a long-running process that does not exit.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-crashloop
+  labels: { app: yatri-crashloop }
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo 'started cleanly'; sleep 3600"]

@@ -1,0 +1,10 @@
+# BROKEN: the tag does not exist in the registry.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-badtag
+  labels: { app: yatri-badtag }
+spec:
+  containers:
+    - name: web
+      image: nginx:1.27-alpine-this-tag-does-not-exist

@@ -1,0 +1,29 @@
+# BROKEN: the Service selector says app=yatri-api, the Pods are labelled
+# app=yatri-api-v2. Selector never matches, so Endpoints stays empty.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: yatri-api-v2 }
+  template:
+    metadata:
+      labels: { app: yatri-api-v2 }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatri-api
+spec:
+  selector: { app: yatri-api }
+  ports:
+    - port: 80
+      targetPort: 80

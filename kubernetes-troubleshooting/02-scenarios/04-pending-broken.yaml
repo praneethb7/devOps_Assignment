@@ -1,0 +1,15 @@
+# BROKEN: asks for 64 CPUs. No node can satisfy it, so the scheduler parks it.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-pending
+  labels: { app: yatri-pending }
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep 3600"]
+      resources:
+        requests:
+          cpu: "64"
+          memory: 256Gi

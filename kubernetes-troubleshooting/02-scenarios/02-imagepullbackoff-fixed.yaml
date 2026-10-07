@@ -1,0 +1,10 @@
+# FIXED: a tag that is actually published.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-badtag
+  labels: { app: yatri-badtag }
+spec:
+  containers:
+    - name: web
+      image: nginx:1.27-alpine

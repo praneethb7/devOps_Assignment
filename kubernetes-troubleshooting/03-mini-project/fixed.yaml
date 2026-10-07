@@ -1,0 +1,33 @@
+# All three faults corrected:
+#   1. a published image tag
+#   2. selector matches the Pod labels
+#   3. targetPort matches containerPort
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-checkout
+  namespace: yatri-triage
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: yatri-checkout }
+  template:
+    metadata:
+      labels: { app: yatri-checkout }
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatri-checkout
+  namespace: yatri-triage
+spec:
+  selector: { app: yatri-checkout }
+  ports:
+    - port: 80
+      targetPort: 80
