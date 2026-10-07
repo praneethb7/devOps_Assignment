@@ -1,0 +1,2 @@
+# No runtime dependencies: the app uses the standard library only.
+# The file exists so the SCA stage has a manifest to audit.

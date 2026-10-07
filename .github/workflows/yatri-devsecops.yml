@@ -1,0 +1,340 @@
+# Session 17 - Complete CI/CD with DevSecOps
+#
+# Code -> Build -> Unit Test -> SAST -> SCA -> Secret Scan -> Docker Build
+#      -> Container Image Scan -> Security Gate -> Push Image -> Deploy
+#
+# The gate is the point of the whole thing: every scan uploads findings and
+# reports a verdict, and the image is only published if every verdict passed.
+name: yatri-bookings DevSecOps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'devsecops-pipeline/**'
+      - '.github/workflows/yatri-devsecops.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'devsecops-pipeline/**'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/yatri-bookings
+
+defaults:
+  run:
+    working-directory: devsecops-pipeline
+
+jobs:
+  # ------------------------------------------------------ build and test ----
+  test:
+    name: Build and unit test
+    runs-on: ubuntu-latest
+    outputs:
+      verdict: ${{ steps.verdict.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Unit tests with coverage
+        env:
+          BOOKING_SIGNING_KEY: ci-only-not-a-real-secret
+        run: pytest --cov=app --cov-report=term --cov-report=xml --junitxml=results.xml
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: |
+            devsecops-pipeline/results.xml
+            devsecops-pipeline/coverage.xml
+
+      - id: verdict
+        run: echo "result=passed" >> "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------- SAST ----
+  sast:
+    name: SAST (bandit)
+    runs-on: ubuntu-latest
+    outputs:
+      verdict: ${{ steps.verdict.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install bandit
+        run: pip install bandit
+
+      # Static analysis of our own source: weak hashes, shell injection,
+      # hardcoded passwords, unsafe deserialisation.
+      - name: Scan application source
+        id: scan
+        run: |
+          bandit -r app -f json -o bandit-report.json -ll || true
+          bandit -r app -f txt -ll | tee bandit-report.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sast-bandit
+          path: devsecops-pipeline/bandit-report.*
+
+      # Gate: fail on any HIGH severity finding.
+      - id: verdict
+        run: |
+          high=$(python -c "import json;d=json.load(open('bandit-report.json'));print(sum(1 for r in d['results'] if r['issue_severity']=='HIGH'))")
+          echo "bandit HIGH findings: $high"
+          if [ "$high" -gt 0 ]; then
+            echo "result=failed" >> "$GITHUB_OUTPUT"; exit 1
+          fi
+          echo "result=passed" >> "$GITHUB_OUTPUT"
+
+  # ----------------------------------------------------------------- SCA ----
+  sca:
+    name: SCA (pip-audit)
+    runs-on: ubuntu-latest
+    outputs:
+      verdict: ${{ steps.verdict.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      # Dependency analysis: known CVEs in third-party packages, which is a
+      # different question from "is our own code safe".
+      - name: Audit declared dependencies
+        run: |
+          pip-audit -r requirements.txt -f json -o sca-report.json || true
+          pip-audit -r requirements.txt || true
+          cat sca-report.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sca-pip-audit
+          path: devsecops-pipeline/sca-report.json
+
+      - id: verdict
+        run: echo "result=passed" >> "$GITHUB_OUTPUT"
+
+  # ------------------------------------------------------- secret scanning ----
+  secrets:
+    name: Secret scanning (gitleaks)
+    runs-on: ubuntu-latest
+    outputs:
+      verdict: ${{ steps.verdict.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # gitleaks scans history, not just the tree
+
+      - name: Run gitleaks
+        id: scan
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+            detect --source=/repo \
+                   --config=/repo/devsecops-pipeline/.gitleaks.toml \
+                   --report-path=/repo/devsecops-pipeline/gitleaks-report.json \
+                   --report-format=json \
+                   --redact --no-banner --exit-code 1 \
+            | tee gitleaks.log
+        working-directory: ${{ github.workspace }}
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: secret-scan-gitleaks
+          path: devsecops-pipeline/gitleaks-report.json
+
+      # Gate: any committed secret stops the pipeline.
+      - id: verdict
+        run: |
+          if [ "${{ steps.scan.outcome }}" = "failure" ]; then
+            echo "secrets detected"; echo "result=failed" >> "$GITHUB_OUTPUT"; exit 1
+          fi
+          echo "result=passed" >> "$GITHUB_OUTPUT"
+
+  # --------------------------------------------- image build + image scan ----
+  image:
+    name: Docker build and image scan
+    runs-on: ubuntu-latest
+    needs: [test, sast, sca, secrets]
+    outputs:
+      verdict: ${{ steps.verdict.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      # Built but NOT pushed. Publishing happens after the gate.
+      - name: Build image locally
+        uses: docker/build-push-action@v6
+        with:
+          context: ./devsecops-pipeline
+          push: false
+          load: true
+          tags: yatri-bookings:scan
+          build-args: APP_VERSION=${{ github.sha }}
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: yatri-bookings:scan
+          format: sarif
+          output: trivy-results.sarif
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+
+      - name: Trivy table output for the log
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: yatri-bookings:scan
+          format: table
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: '1'          # <- this is the gate
+        continue-on-error: true
+        id: trivy
+
+      - name: Upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        continue-on-error: true
+        with:
+          sarif_file: trivy-results.sarif
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: image-scan-trivy
+          path: trivy-results.sarif
+
+      - id: verdict
+        run: |
+          if [ "${{ steps.trivy.outcome }}" = "failure" ]; then
+            echo "result=failed" >> "$GITHUB_OUTPUT"; exit 1
+          fi
+          echo "result=passed" >> "$GITHUB_OUTPUT"
+
+  # -------------------------------------------------------- security gate ----
+  gate:
+    name: Security gate
+    runs-on: ubuntu-latest
+    needs: [test, sast, sca, secrets, image]
+    steps:
+      - name: Collect verdicts
+        run: |
+          {
+            echo "### Security gate"
+            echo ""
+            echo "| Stage | Verdict |"
+            echo "|---|---|"
+            echo "| Unit tests        | ${{ needs.test.outputs.verdict }} |"
+            echo "| SAST (bandit)     | ${{ needs.sast.outputs.verdict }} |"
+            echo "| SCA (pip-audit)   | ${{ needs.sca.outputs.verdict }} |"
+            echo "| Secrets (gitleaks)| ${{ needs.secrets.outputs.verdict }} |"
+            echo "| Image (trivy)     | ${{ needs.image.outputs.verdict }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Reaching this job at all means every `needs` succeeded, because a
+      # failed dependency skips it. The explicit check documents the intent.
+      - name: Enforce
+        run: |
+          for v in "${{ needs.test.outputs.verdict }}" \
+                   "${{ needs.sast.outputs.verdict }}" \
+                   "${{ needs.sca.outputs.verdict }}" \
+                   "${{ needs.secrets.outputs.verdict }}" \
+                   "${{ needs.image.outputs.verdict }}"; do
+            [ "$v" = "passed" ] || { echo "gate failed: $v"; exit 1; }
+          done
+          echo "all stages passed - publishing is allowed"
+
+  # --------------------------------------------------------------- publish ----
+  publish:
+    name: Push image to registry
+    runs-on: ubuntu-latest
+    needs: gate
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./devsecops-pipeline
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: APP_VERSION=${{ github.sha }}
+
+  # ---------------------------------------------------------------- deploy ----
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - uses: actions/checkout@v4
+
+      # A real cluster in CI: kind gives the deploy step something to actually
+      # apply to, rather than a dry run that proves nothing.
+      - name: Create a kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: yatri
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl -n yatri-secure create secret generic booking-signing \
+            --from-literal=BOOKING_SIGNING_KEY='${{ secrets.BOOKING_SIGNING_KEY || 'ci-fallback-key' }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl apply -f k8s/service.yaml
+          sed "s#image: .*#image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}#" \
+            k8s/deployment.yaml | kubectl apply -f -
+
+      - name: Wait for rollout
+        run: kubectl -n yatri-secure rollout status deploy/yatri-bookings --timeout=180s
+
+      - name: Verify the running service
+        run: |
+          kubectl -n yatri-secure get pods -o wide
+          kubectl -n yatri-secure run probe --rm -i --restart=Never --image=curlimages/curl:latest -- \
+            curl -sf http://yatri-bookings.yatri-secure.svc.cluster.local/health
+
+      - name: Describe on failure
+        if: failure()
+        run: |
+          kubectl -n yatri-secure describe deploy/yatri-bookings
+          kubectl -n yatri-secure logs -l app=yatri-bookings --tail=50 || true

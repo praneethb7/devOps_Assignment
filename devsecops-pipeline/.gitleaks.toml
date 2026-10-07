@@ -1,0 +1,12 @@
+# gitleaks configuration for the secret-scanning stage.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Test fixtures that look like secrets but are not"
+regexes = [
+  '''test-key-not-a-real-secret''',
+]
+paths = [
+  '''tests/.*''',
+]
