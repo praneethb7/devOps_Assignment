@@ -143,6 +143,10 @@ jobs:
       contents: read
       packages: read
     steps:
+      # Needed only so the workflow-level working-directory exists on this
+      # runner - this job builds nothing from source.
+      - uses: actions/checkout@v4
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -154,7 +158,11 @@ jobs:
       # This is the step that proves the artifact works, not just the source.
       - name: Run the published image
         run: |
-          IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+          # GHCR rejects uppercase in an image name. docker/metadata-action
+          # lowercases it automatically on push; a hand-built ref has to do
+          # the same, because this repository is "devOps_Assignment".
+          IMAGE=$(echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}" | tr '[:upper:]' '[:lower:]')
+          echo "pulling $IMAGE"
           docker run -d --name yatri -p 8000:8000 "$IMAGE"
           for i in $(seq 1 20); do
             curl -sf http://localhost:8000/health && break

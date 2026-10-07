@@ -191,7 +191,7 @@ jobs:
           build-args: APP_VERSION=${{ github.sha }}
 
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: yatri-bookings:scan
           format: sarif
@@ -200,7 +200,7 @@ jobs:
           ignore-unfixed: true
 
       - name: Trivy table output for the log
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: yatri-bookings:scan
           format: table
@@ -321,8 +321,8 @@ jobs:
             --from-literal=BOOKING_SIGNING_KEY='${{ secrets.BOOKING_SIGNING_KEY || 'ci-fallback-key' }}' \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f k8s/service.yaml
-          sed "s#image: .*#image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}#" \
-            k8s/deployment.yaml | kubectl apply -f -
+          IMAGE=$(echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}" | tr '[:upper:]' '[:lower:]')
+          sed "s#image: .*#image: $IMAGE#" k8s/deployment.yaml | kubectl apply -f -
 
       - name: Wait for rollout
         run: kubectl -n yatri-secure rollout status deploy/yatri-bookings --timeout=180s
