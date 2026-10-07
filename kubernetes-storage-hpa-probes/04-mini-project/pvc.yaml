@@ -1,0 +1,13 @@
+# Dynamically provisioned storage for the receipts archive.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: receipts-archive
+  namespace: yatri-receipts
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 256Mi

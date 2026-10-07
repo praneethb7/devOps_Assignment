@@ -1,0 +1,27 @@
+# livenessProbe decides whether to RESTART the container.
+# The file exists at startup and is deleted after 30s, so the probe
+# starts failing and the kubelet kills the container.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-liveness
+  labels: { app: yatri-liveness }
+spec:
+  containers:
+    - name: app
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80
+      command: ["sh", "-c"]
+      args:
+        - |
+          echo ok > /usr/share/nginx/html/healthz
+          (sleep 30 && rm -f /usr/share/nginx/html/healthz) &
+          nginx -g 'daemon off;'
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 80
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        failureThreshold: 2

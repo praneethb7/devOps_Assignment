@@ -1,0 +1,30 @@
+# Parallel request loops. A single serial `wget` loop is bounded by process
+# startup on the client and barely moves the target's CPU - see 02-hpa.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: receipts-load
+  namespace: yatri-receipts
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: receipts-load }
+  template:
+    metadata:
+      labels: { app: receipts-load }
+    spec:
+      containers:
+        - name: load
+          image: busybox:1.36
+          command: ["sh", "-c"]
+          args:
+            - |
+              i=0
+              while [ $i -lt 8 ]; do
+                ( while true; do wget -q -O- http://receipts-api >/dev/null 2>&1; done ) &
+                i=$((i+1))
+              done
+              wait
+          resources:
+            requests:
+              cpu: 50m

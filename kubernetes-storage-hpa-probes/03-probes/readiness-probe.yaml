@@ -1,0 +1,37 @@
+# readinessProbe decides whether the Pod receives Service traffic.
+# This container is deliberately slow to become ready: the file the probe
+# looks for only appears after 25 seconds.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-readiness
+  labels: { app: yatri-readiness }
+spec:
+  containers:
+    - name: app
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80
+      command: ["sh", "-c"]
+      args:
+        - |
+          rm -f /usr/share/nginx/html/ready
+          (sleep 25 && echo ok > /usr/share/nginx/html/ready) &
+          nginx -g 'daemon off;'
+      readinessProbe:
+        httpGet:
+          path: /ready
+          port: 80
+        initialDelaySeconds: 3
+        periodSeconds: 3
+        failureThreshold: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yatri-readiness
+spec:
+  selector: { app: yatri-readiness }
+  ports:
+    - port: 80
+      targetPort: 80

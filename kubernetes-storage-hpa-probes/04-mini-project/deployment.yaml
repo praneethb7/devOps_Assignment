@@ -1,0 +1,48 @@
+# One Deployment exercising all three of the session's topics:
+#   - a PVC mounted for durable data
+#   - readiness, liveness and startup probes
+#   - CPU requests, without which the HPA cannot compute utilisation
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: receipts-api
+  namespace: yatri-receipts
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: receipts-api }
+  template:
+    metadata:
+      labels: { app: receipts-api }
+    spec:
+      volumes:
+        - name: archive
+          persistentVolumeClaim:
+            claimName: receipts-archive
+      containers:
+        - name: api
+          image: registry.k8s.io/hpa-example
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: archive
+              mountPath: /var/receipts
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 400m
+              memory: 192Mi
+          startupProbe:
+            httpGet: { path: /, port: 80 }
+            periodSeconds: 3
+            failureThreshold: 20
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            periodSeconds: 5
+            failureThreshold: 2
+          livenessProbe:
+            httpGet: { path: /, port: 80 }
+            periodSeconds: 10
+            failureThreshold: 3

@@ -1,0 +1,23 @@
+# The mistake startupProbe exists to prevent: the same slow container with a
+# livenessProbe and no startupProbe. Liveness fails during startup and the
+# kubelet restarts it forever - the container never gets the 40s it needs.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-no-startup
+  labels: { app: yatri-no-startup }
+spec:
+  containers:
+    - name: app
+      image: nginx:1.27-alpine
+      command: ["sh", "-c"]
+      args:
+        - |
+          (sleep 40 && echo ok > /usr/share/nginx/html/started) &
+          nginx -g 'daemon off;'
+      livenessProbe:
+        httpGet:
+          path: /started
+          port: 80
+        periodSeconds: 5
+        failureThreshold: 2

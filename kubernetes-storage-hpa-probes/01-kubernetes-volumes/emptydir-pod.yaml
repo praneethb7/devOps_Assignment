@@ -1,0 +1,33 @@
+# emptyDir: scratch space shared by two containers in the same Pod.
+# Lives and dies with the Pod, not with the container.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-emptydir
+  labels:
+    app: yatri-storage
+    demo: emptydir
+spec:
+  volumes:
+    - name: scratch
+      emptyDir: {}
+  containers:
+    - name: writer
+      image: busybox:1.36
+      command: ["sh", "-c"]
+      args:
+        - |
+          while true; do
+            echo "$(date -Iseconds) booking written by writer" >> /shared/bookings.log
+            sleep 5
+          done
+      volumeMounts:
+        - name: scratch
+          mountPath: /shared
+    - name: reader
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: scratch
+          mountPath: /shared
+          readOnly: true

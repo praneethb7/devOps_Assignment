@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: receipts-api
+  namespace: yatri-receipts
+spec:
+  selector: { app: receipts-api }
+  ports:
+    - port: 80
+      targetPort: 80

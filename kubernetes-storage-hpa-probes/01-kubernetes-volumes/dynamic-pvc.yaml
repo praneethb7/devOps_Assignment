@@ -1,0 +1,12 @@
+# No PV written by hand. The default StorageClass provisions one on demand.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yatri-dynamic-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 512Mi

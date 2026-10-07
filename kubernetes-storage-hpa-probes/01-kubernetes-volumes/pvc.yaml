@@ -1,0 +1,13 @@
+# The claim. A developer asks for storage without naming a PV.
+# storageClassName: manual stops the dynamic provisioner stepping in.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: yatri-static-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 128Mi

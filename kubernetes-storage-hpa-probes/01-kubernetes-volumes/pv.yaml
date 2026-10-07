@@ -1,0 +1,15 @@
+# A statically provisioned PersistentVolume. The cluster admin creates this.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: yatri-static-pv
+spec:
+  capacity:
+    storage: 256Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /mnt/yatri-static-pv
+    type: DirectoryOrCreate

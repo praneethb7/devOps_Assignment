@@ -1,0 +1,30 @@
+# startupProbe protects a slow-starting container from the livenessProbe.
+# Liveness does not run at all until startup succeeds.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: yatri-startup
+  labels: { app: yatri-startup }
+spec:
+  containers:
+    - name: app
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80
+      command: ["sh", "-c"]
+      args:
+        - |
+          (sleep 40 && echo ok > /usr/share/nginx/html/started) &
+          nginx -g 'daemon off;'
+      startupProbe:
+        httpGet:
+          path: /started
+          port: 80
+        periodSeconds: 5
+        failureThreshold: 20          # allows up to 100s to start
+      livenessProbe:
+        httpGet:
+          path: /started
+          port: 80
+        periodSeconds: 5
+        failureThreshold: 2
