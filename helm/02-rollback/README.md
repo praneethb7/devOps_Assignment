@@ -46,7 +46,9 @@ REVISION  UPDATED                   STATUS      CHART             DESCRIPTION
 3         Wed Oct  7 21:19:06 2026  deployed    echo-chart-0.1.0  Upgrade complete
 ```
 
-![three revisions installed and upgraded, each serving its own message](screenshots/01-install-upgrade.png)
+![the install and the first upgrade, each serving its own message](screenshots/01-install-upgrade.png)
+
+![the third upgrade and helm history showing all three revisions](screenshots/02-third-revision.png)
 
 Each `helm upgrade` incremented the revision and the served page followed. Exactly one
 revision is `deployed`; the rest are `superseded`.
@@ -92,7 +94,7 @@ USER-SUPPLIED VALUES:
 message: revision two
 ```
 
-![the rollback creating revision 4 described as Rollback to 2, serving revision two's content](screenshots/02-rollback.png)
+![the rollback creating revision 4 described as Rollback to 2, serving revision two's content](screenshots/03-rollback.png)
 
 Three things to take from that output.
 

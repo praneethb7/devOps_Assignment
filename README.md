@@ -51,8 +51,8 @@ them is local, so there is no account and no bill. The only AWS-specific code is
 [`.github/workflows/`](.github/workflows/), because GitHub only reads workflows from the
 repository root. Both publish images to GHCR.
 
-**Screenshots** are terminal renderings of the captured stdout of each command, produced
-from the real output of the run they document.
+**Screenshots** are screen captures of a real Terminal window (178 columns) showing the
+output of the run they document.
 
 ---
 

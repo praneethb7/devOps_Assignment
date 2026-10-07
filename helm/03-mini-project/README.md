@@ -56,6 +56,13 @@ limits={"cpu":"500m","memory":"256Mi"}
   <p>environment: production</p>
 </body></html>
 
+```
+
+![the production upgrade reaching revision 2 with three replicas](screenshots/01-prod-upgrade.png)
+
+![the production config, limits and the served page proving which values are live](screenshots/02-prod-verify.png)
+
+```
 $ helm get values yatri-notes -n helm-demo
 USER-SUPPLIED VALUES:
 config:
@@ -72,7 +79,7 @@ resources:
     memory: 64Mi
 ```
 
-![the production release at three replicas with production values and the page proving it](screenshots/01-prod-values.png)
+![helm get values returning only the production overlay, not the merged result](screenshots/03-values-diff.png)
 
 Three replicas, `warn` logging, 500m limit, production banner — and the entire difference is
 [`values-prod.yaml`](notes-chart/values-prod.yaml), a 12-line file. There is no second copy

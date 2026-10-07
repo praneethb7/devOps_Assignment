@@ -110,7 +110,9 @@ HTTP 204
 { "total": 2, "todo": 0, "inProgress": 1, "done": 1 }
 ```
 
-![all five endpoints exercised, including the validation rejection and the stats changing](screenshots/02-api-crud.png)
+![read, stats, update and delete, with the stats total falling from three to two](screenshots/03-api-read-update-delete.png)
+
+![the validation rejection and the three creates returning 201](screenshots/02-api-create.png)
 
 Five endpoints, and the responses are consistent with each other — `stats` went from
 `total: 3` to `total: 2` after the delete, and the `PUT` moved one task from `todo` to
@@ -164,7 +166,7 @@ frontend  HTTP 200  343 bytes
 { "total": 2, "todo": 0, "inProgress": 1, "done": 1 }
 ```
 
-![the tasks table queried directly in psql, the alembic version, and the API reached through nginx](screenshots/03-database-frontend.png)
+![the tasks table queried directly in psql, the alembic version, and the API reached through nginx](screenshots/04-database-frontend.png)
 
 Three separate things confirmed here.
 

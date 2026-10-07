@@ -309,7 +309,9 @@ nameserver 10.96.0.10
 options ndots:5
 ```
 
-![a Service name resolving, a wrong name returning NXDOMAIN, and the resolv.conf search path](screenshots/07-dns.png)
+![the short name resolving after four NXDOMAIN lines, and the FQDN resolving in one clean query](screenshots/07-dns-resolves.png)
+
+![a wrong name returning NXDOMAIN for every suffix, CoreDNS healthy, and the resolv.conf search path](screenshots/07-dns-nxdomain.png)
 
 The successful lookup is the messier of the two, and that is the interesting part. Resolving
 `yatri-api` printed **four `NXDOMAIN` lines before succeeding**, and still exited non-zero.
