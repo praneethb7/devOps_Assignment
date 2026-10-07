@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yatri-web
+  namespace: argocd
+spec:
+  project: default
+
+  # The source of truth. Argo CD polls this path and compares it with the
+  # live cluster; the cluster never tells git what it should contain.
+  source:
+    repoURL: https://github.com/praneethb7/devOps_Assignment.git
+    targetRevision: main
+    path: monitoring-observability-gitops/03-gitops/app
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: yatri-gitops
+
+  syncPolicy:
+    automated:
+      prune: true        # delete objects removed from git
+      selfHeal: true     # revert manual changes made in the cluster
+    syncOptions:
+      - CreateNamespace=true

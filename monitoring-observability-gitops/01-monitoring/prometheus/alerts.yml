@@ -1,0 +1,41 @@
+groups:
+  - name: yatri-bookings
+    rules:
+      # A ratio, not a raw count. "20 failures" means nothing without the
+      # denominator; 5% of requests failing is actionable.
+      - alert: HighBookingFailureRate
+        expr: |
+          sum(rate(yatri_bookings_total{outcome="failed"}[1m]))
+            /
+          sum(rate(yatri_bookings_total[1m]))
+            > 0.05
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Booking failure rate above 5%"
+          description: "{{ $value | humanizePercentage }} of bookings are failing."
+
+      # Histogram quantile over the bucket series. Note rate() inside -
+      # without it this is a lifetime average, not a current latency.
+      - alert: BookingLatencyP95High
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(yatri_booking_duration_seconds_bucket[1m])) by (le)
+          ) > 0.5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 booking latency above 500ms"
+
+      # The alert that catches "monitoring is broken" rather than
+      # "the service is broken".
+      - alert: BookingServiceDown
+        expr: up{job="yatri-bookings"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus cannot scrape the booking service"
