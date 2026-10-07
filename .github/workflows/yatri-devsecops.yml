@@ -257,6 +257,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, sast, sca, secrets, image]
     steps:
+      # This job runs no build, but the workflow-level working-directory
+      # still has to exist on the runner before any `run:` step can start.
+      - uses: actions/checkout@v4
+
       - name: Collect verdicts
         run: |
           {
