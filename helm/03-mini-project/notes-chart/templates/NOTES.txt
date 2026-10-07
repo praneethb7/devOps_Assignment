@@ -1,0 +1,9 @@
+{{ .Chart.Name }} {{ .Chart.Version }} installed as release "{{ .Release.Name }}".
+
+Environment: {{ .Values.config.environment }}
+Replicas:    {{ .Values.replicaCount }}
+Revision:    {{ .Release.Revision }}
+
+Reach it with:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "notes-chart.fullname" . }} 8080:{{ .Values.service.port }}
+  curl http://localhost:8080

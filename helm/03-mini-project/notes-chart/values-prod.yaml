@@ -1,0 +1,16 @@
+# Production overlay. Only the differences - everything else comes from
+# values.yaml, which is the point of having a chart at all.
+replicaCount: 3
+
+config:
+  environment: production
+  banner: "yatri notes - PRODUCTION"
+  logLevel: warn
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 64Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi

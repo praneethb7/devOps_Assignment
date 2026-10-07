@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "notes-chart.fullname" . }}
+  labels:
+    {{- include "notes-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "notes-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "notes-chart.selectorLabels" . | nindent 8 }}
+      annotations:
+        # Hash the ConfigMap into an annotation so a config-only change
+        # still rolls the Pods. Without this, `helm upgrade` updates the
+        # ConfigMap and the running Pods keep the old values - the same
+        # trap as Session 12.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      volumes:
+        - name: content
+          configMap:
+            name: {{ include "notes-chart.fullname" . }}
+            items:
+              - key: index.html
+                path: index.html
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: {{ include "notes-chart.fullname" . }}
+          volumeMounts:
+            - name: content
+              mountPath: /usr/share/nginx/html
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.probes.enabled }}
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 10
+          {{- end }}

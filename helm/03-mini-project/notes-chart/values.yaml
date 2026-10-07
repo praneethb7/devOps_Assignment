@@ -1,0 +1,29 @@
+# Defaults = the dev environment. values-prod.yaml overrides a few of these.
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.27-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Rendered into a ConfigMap and mounted as the served index.html, so the
+# environment a release belongs to is visible in a browser.
+config:
+  environment: dev
+  banner: "yatri notes - development"
+  logLevel: debug
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+probes:
+  enabled: true

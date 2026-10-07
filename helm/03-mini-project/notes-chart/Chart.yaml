@@ -1,0 +1,6 @@
+apiVersion: v2
+name: notes-chart
+description: The yatri notes service - one chart, two environments
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
