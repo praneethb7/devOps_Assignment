@@ -1,0 +1,57 @@
+name: campuscrate
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: campuscrate
+      POSTGRES_USER: campuscrate
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-campuscrate-local-only}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campuscrate -d campuscrate"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    build: ./backend
+    image: campuscrate-backend:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://campuscrate:${POSTGRES_PASSWORD:-campuscrate-local-only}@postgres:5432/campuscrate
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  backend:
+    build: ./backend
+    image: campuscrate-backend:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://campuscrate:${POSTGRES_PASSWORD:-campuscrate-local-only}@postgres:5432/campuscrate
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8001}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+  frontend:
+    build: ./frontend
+    image: campuscrate-frontend:local
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+volumes:
+  postgres-data:
