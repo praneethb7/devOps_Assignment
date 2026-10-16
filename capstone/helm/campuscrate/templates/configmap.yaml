@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campuscrate-config
+data:
+  POSTGRES_DB: campuscrate
+  POSTGRES_USER: campuscrate

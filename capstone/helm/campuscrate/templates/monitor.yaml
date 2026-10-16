@@ -1,0 +1,36 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: campuscrate
+  labels:
+    release: {{ .Values.monitoring.release }}
+spec:
+  selector:
+    matchLabels: {app: campuscrate-backend}
+  endpoints:
+    - {port: http, path: /metrics, interval: 15s}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: campuscrate
+  labels:
+    release: {{ .Values.monitoring.release }}
+spec:
+  groups:
+    - name: campuscrate
+      rules:
+        - alert: CampusCrateUnavailable
+          expr: up{job="backend",namespace="{{ .Release.Namespace }}"} == 0
+          for: 1m
+          labels: {severity: critical}
+          annotations:
+            summary: CampusCrate backend target is unavailable
+        - alert: CampusCrateHighErrorRate
+          expr: sum(rate(campuscrate_http_requests_total{status=~"5.."}[5m])) / clamp_min(sum(rate(campuscrate_http_requests_total[5m])), 0.001) > 0.05
+          for: 2m
+          labels: {severity: warning}
+          annotations:
+            summary: More than 5 percent of CampusCrate requests are failing
+{{- end }}

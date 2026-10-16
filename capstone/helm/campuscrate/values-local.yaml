@@ -1,0 +1,6 @@
+backend:
+  image: campuscrate-backend
+  tag: local
+frontend:
+  image: campuscrate-frontend
+  tag: local

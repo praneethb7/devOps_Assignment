@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: campuscrate-migrate-{{ .Release.Revision }}
+spec:
+  backoffLimit: 12
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels: {app: campuscrate-migration}
+    spec:
+      restartPolicy: OnFailure
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001}
+      containers:
+        - name: migrate
+          image: "{{ .Values.backend.image }}:{{ required "backend.tag must be a commit SHA or local tag" .Values.backend.tag }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          command: [alembic, upgrade, head]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.existingSecret }}
+                  key: DATABASE_URL
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 256Mi}

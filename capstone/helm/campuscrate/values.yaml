@@ -1,0 +1,35 @@
+backend:
+  image: ghcr.io/praneethb7/campuscrate-backend
+  tag: ""
+  replicas: 2
+  resources:
+    requests: {cpu: 100m, memory: 128Mi}
+    limits: {cpu: 500m, memory: 256Mi}
+frontend:
+  image: ghcr.io/praneethb7/campuscrate-frontend
+  tag: ""
+  replicas: 2
+  resources:
+    requests: {cpu: 50m, memory: 32Mi}
+    limits: {cpu: 200m, memory: 64Mi}
+imagePullPolicy: IfNotPresent
+database:
+  image: postgres:17-alpine
+  existingSecret: campuscrate-db
+  storage: 2Gi
+  resources:
+    requests: {cpu: 100m, memory: 128Mi}
+    limits: {cpu: 500m, memory: 256Mi}
+ingress:
+  enabled: true
+  className: nginx
+  host: campuscrate.local
+  tls: []
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 60
+monitoring:
+  enabled: false
+  release: monitoring
