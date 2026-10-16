@@ -16,7 +16,7 @@ with SessionLocal() as db:
             ("Wireless microphone", "Events", 6, "AV room"),
             ("Logitech webcam", "Electronics", 5, "Media lab"),
         ]
-        items = [Equipment(name=n, category=c, quantity=q, location=l) for n,c,q,l in samples]
+        items = [Equipment(name=n, category=c, quantity=q, location=location) for n,c,q,location in samples]
         db.add_all(items)
         db.flush()
         now = datetime.now(timezone.utc)
