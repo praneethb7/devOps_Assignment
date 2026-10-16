@@ -1,5 +1,13 @@
 # DevOps Coursework
 
+## Final capstone — CampusCrate
+
+The original final project is **[CampusCrate](capstone/)**: campus equipment inventory, borrowing, returns and overdue tracking, with React, FastAPI, PostgreSQL, Docker, GitHub Actions, Trivy, GHCR, Terraform, Kubernetes, Helm, Ingress, HPA and Prometheus/Grafana.
+
+Open the **[capstone README](capstone/README.md)** for run instructions, **[submission checklist](capstone/docs/SUBMISSION.md)** for rubric mapping and **[evidence](capstone/evidence/)** for verified results. AWS infrastructure is prepared and validated as code; real AWS provisioning was intentionally not performed.
+
+---
+
 Hands-on work for the SST DevOps & Cloud module, one folder per session. Each folder has its
 own README with the commands that were run, the output they produced, and screenshots from
 the run.
