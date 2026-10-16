@@ -39,7 +39,7 @@ function App() {
   return <div className="shell">
     <aside className="sidebar"><a className="brand" href="#" aria-label="CampusCrate home"><span className="brand-icon"><Package size={23}/></span>campuscrate<span className="brand-dot">.</span></a>
       <div className="workspace"><span className="workspace-icon">S</span><div><strong>Campus workspace</strong><small>Equipment lending</small></div><ChevronRight size={15}/></div>
-      <div className="nav-label">WORKSPACE</div><nav>{['Overview', 'Inventory', 'Loans & returns'].map((v,i) => <button key={v} className={view === v ? 'nav-item selected' : 'nav-item'} onClick={() => setView(v)}>{i===0 ? <LayoutDashboard size={18}/> : i===1 ? <Box size={18}/> : <ArrowUpRight size={18}/>}<span>{v}</span>{i===2 && <b>{active.length}</b>}</button>)}</nav>
+      <div className="nav-label">WORKSPACE</div><nav>{['Overview', 'Inventory', 'Loans & returns'].map((v,i) => <button key={v} aria-label={v} className={view === v ? 'nav-item selected' : 'nav-item'} onClick={() => setView(v)}>{i===0 ? <LayoutDashboard size={18}/> : i===1 ? <Box size={18}/> : <ArrowUpRight size={18}/>}<span>{v}</span>{i===2 && <b>{active.length}</b>}</button>)}</nav>
       <div className="sidebar-note"><span className="tiny-label">LESS BUYING. MORE SHARING.</span><h3>Good gear.<br/>Great possibilities.</h3><p>Keep your campus moving,<br/>one shared resource at a time.</p><div className="crate-art"><Package size={66} strokeWidth={1}/><span/><span/></div></div>
       <div className="profile"><span className="avatar">PB</span><div><strong>Praneeth Budati</strong><small>Workspace administrator</small></div></div>
     </aside>
