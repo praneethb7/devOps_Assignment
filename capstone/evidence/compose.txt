@@ -1,0 +1,4 @@
+NAME                     IMAGE                        COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+campuscrate-backend-1    campuscrate-backend:local    "uvicorn app.main:ap…"   backend    4 minutes ago    Up 4 minutes (healthy)    127.0.0.1:8001->8000/tcp
+campuscrate-frontend-1   campuscrate-frontend:local   "/docker-entrypoint.…"   frontend   4 minutes ago    Up 4 minutes (healthy)    127.0.0.1:3000->8080/tcp
+campuscrate-postgres-1   postgres:17-alpine           "docker-entrypoint.s…"   postgres   10 minutes ago   Up 10 minutes (healthy)   5432/tcp

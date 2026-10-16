@@ -1,0 +1,3 @@
+LAST SEEN   TYPE     REASON              OBJECT                            MESSAGE
+8m10s       Normal   SuccessfulRescale   horizontalpodautoscaler/backend   New size: 2; reason: Current number of replicas below Spec.MinReplicas
+3m10s       Normal   SuccessfulRescale   horizontalpodautoscaler/backend   New size: 5; reason: cpu resource utilization (percentage of request) above target

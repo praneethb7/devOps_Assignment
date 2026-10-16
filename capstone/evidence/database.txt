@@ -1,0 +1,24 @@
+               List of relations
+ Schema |      Name       | Type  |    Owner    
+--------+-----------------+-------+-------------
+ public | alembic_version | table | campuscrate
+ public | equipment       | table | campuscrate
+ public | loans           | table | campuscrate
+(3 rows)
+
+     version_num      
+----------------------
+ 0001_equipment_loans
+(1 row)
+
+ id |        name         | quantity 
+----+---------------------+----------
+  1 | Canon EOS 200D      |        4
+  2 | Cricket kit         |        3
+  3 | Arduino starter kit |        8
+  4 | Portable projector  |        2
+  5 | Wireless microphone |        6
+  6 | Logitech webcam     |        5
+  7 | Smoke-test camera   |        2
+(7 rows)
+

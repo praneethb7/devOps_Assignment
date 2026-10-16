@@ -1,0 +1,105 @@
+# HELP python_gc_objects_collected_total Objects collected during gc
+# TYPE python_gc_objects_collected_total counter
+python_gc_objects_collected_total{generation="0"} 387.0
+python_gc_objects_collected_total{generation="1"} 56.0
+python_gc_objects_collected_total{generation="2"} 40.0
+# HELP python_gc_objects_uncollectable_total Uncollectable objects found during GC
+# TYPE python_gc_objects_uncollectable_total counter
+python_gc_objects_uncollectable_total{generation="0"} 0.0
+python_gc_objects_uncollectable_total{generation="1"} 0.0
+python_gc_objects_uncollectable_total{generation="2"} 0.0
+# HELP python_gc_collections_total Number of times this generation was collected
+# TYPE python_gc_collections_total counter
+python_gc_collections_total{generation="0"} 1763.0
+python_gc_collections_total{generation="1"} 160.0
+python_gc_collections_total{generation="2"} 14.0
+# HELP python_info Python platform information
+# TYPE python_info gauge
+python_info{implementation="CPython",major="3",minor="12",patchlevel="14",version="3.12.14"} 1.0
+# HELP process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE process_virtual_memory_bytes gauge
+process_virtual_memory_bytes 3.510226944e+09
+# HELP process_resident_memory_bytes Resident memory size in bytes.
+# TYPE process_resident_memory_bytes gauge
+process_resident_memory_bytes 8.9042944e+07
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE process_start_time_seconds gauge
+process_start_time_seconds 1.79213651914e+09
+# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE process_cpu_seconds_total counter
+process_cpu_seconds_total 59.75
+# HELP process_open_fds Number of open file descriptors.
+# TYPE process_open_fds gauge
+process_open_fds 15.0
+# HELP process_max_fds Maximum number of open file descriptors.
+# TYPE process_max_fds gauge
+process_max_fds 1.048576e+06
+# HELP campuscrate_http_requests_total HTTP responses
+# TYPE campuscrate_http_requests_total counter
+campuscrate_http_requests_total{method="GET",route="/api/equipment",status="200"} 6953.0
+campuscrate_http_requests_total{method="GET",route="/api/loans",status="200"} 6.0
+campuscrate_http_requests_total{method="GET",route="/api/stats",status="200"} 3.0
+# HELP campuscrate_http_requests_created HTTP responses
+# TYPE campuscrate_http_requests_created gauge
+campuscrate_http_requests_created{method="GET",route="/api/equipment",status="200"} 1.7921365251193173e+09
+campuscrate_http_requests_created{method="GET",route="/api/loans",status="200"} 1.7921365310198162e+09
+campuscrate_http_requests_created{method="GET",route="/api/stats",status="200"} 1.7921365870093203e+09
+# HELP campuscrate_http_request_duration_seconds HTTP request duration
+# TYPE campuscrate_http_request_duration_seconds histogram
+campuscrate_http_request_duration_seconds_bucket{le="0.005",method="GET",route="/api/equipment"} 39.0
+campuscrate_http_request_duration_seconds_bucket{le="0.01",method="GET",route="/api/equipment"} 157.0
+campuscrate_http_request_duration_seconds_bucket{le="0.025",method="GET",route="/api/equipment"} 369.0
+campuscrate_http_request_duration_seconds_bucket{le="0.05",method="GET",route="/api/equipment"} 371.0
+campuscrate_http_request_duration_seconds_bucket{le="0.075",method="GET",route="/api/equipment"} 376.0
+campuscrate_http_request_duration_seconds_bucket{le="0.1",method="GET",route="/api/equipment"} 1085.0
+campuscrate_http_request_duration_seconds_bucket{le="0.25",method="GET",route="/api/equipment"} 2814.0
+campuscrate_http_request_duration_seconds_bucket{le="0.5",method="GET",route="/api/equipment"} 3721.0
+campuscrate_http_request_duration_seconds_bucket{le="0.75",method="GET",route="/api/equipment"} 5901.0
+campuscrate_http_request_duration_seconds_bucket{le="1.0",method="GET",route="/api/equipment"} 6363.0
+campuscrate_http_request_duration_seconds_bucket{le="2.5",method="GET",route="/api/equipment"} 6942.0
+campuscrate_http_request_duration_seconds_bucket{le="5.0",method="GET",route="/api/equipment"} 6953.0
+campuscrate_http_request_duration_seconds_bucket{le="7.5",method="GET",route="/api/equipment"} 6953.0
+campuscrate_http_request_duration_seconds_bucket{le="10.0",method="GET",route="/api/equipment"} 6953.0
+campuscrate_http_request_duration_seconds_bucket{le="+Inf",method="GET",route="/api/equipment"} 6953.0
+campuscrate_http_request_duration_seconds_count{method="GET",route="/api/equipment"} 6953.0
+campuscrate_http_request_duration_seconds_sum{method="GET",route="/api/equipment"} 3155.8285548919966
+campuscrate_http_request_duration_seconds_bucket{le="0.005",method="GET",route="/api/loans"} 0.0
+campuscrate_http_request_duration_seconds_bucket{le="0.01",method="GET",route="/api/loans"} 0.0
+campuscrate_http_request_duration_seconds_bucket{le="0.025",method="GET",route="/api/loans"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.05",method="GET",route="/api/loans"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.075",method="GET",route="/api/loans"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.1",method="GET",route="/api/loans"} 3.0
+campuscrate_http_request_duration_seconds_bucket{le="0.25",method="GET",route="/api/loans"} 4.0
+campuscrate_http_request_duration_seconds_bucket{le="0.5",method="GET",route="/api/loans"} 4.0
+campuscrate_http_request_duration_seconds_bucket{le="0.75",method="GET",route="/api/loans"} 5.0
+campuscrate_http_request_duration_seconds_bucket{le="1.0",method="GET",route="/api/loans"} 6.0
+campuscrate_http_request_duration_seconds_bucket{le="2.5",method="GET",route="/api/loans"} 6.0
+campuscrate_http_request_duration_seconds_bucket{le="5.0",method="GET",route="/api/loans"} 6.0
+campuscrate_http_request_duration_seconds_bucket{le="7.5",method="GET",route="/api/loans"} 6.0
+campuscrate_http_request_duration_seconds_bucket{le="10.0",method="GET",route="/api/loans"} 6.0
+campuscrate_http_request_duration_seconds_bucket{le="+Inf",method="GET",route="/api/loans"} 6.0
+campuscrate_http_request_duration_seconds_count{method="GET",route="/api/loans"} 6.0
+campuscrate_http_request_duration_seconds_sum{method="GET",route="/api/loans"} 1.6403937929998165
+campuscrate_http_request_duration_seconds_bucket{le="0.005",method="GET",route="/api/stats"} 1.0
+campuscrate_http_request_duration_seconds_bucket{le="0.01",method="GET",route="/api/stats"} 1.0
+campuscrate_http_request_duration_seconds_bucket{le="0.025",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.05",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.075",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.1",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.25",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.5",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="0.75",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="1.0",method="GET",route="/api/stats"} 2.0
+campuscrate_http_request_duration_seconds_bucket{le="2.5",method="GET",route="/api/stats"} 3.0
+campuscrate_http_request_duration_seconds_bucket{le="5.0",method="GET",route="/api/stats"} 3.0
+campuscrate_http_request_duration_seconds_bucket{le="7.5",method="GET",route="/api/stats"} 3.0
+campuscrate_http_request_duration_seconds_bucket{le="10.0",method="GET",route="/api/stats"} 3.0
+campuscrate_http_request_duration_seconds_bucket{le="+Inf",method="GET",route="/api/stats"} 3.0
+campuscrate_http_request_duration_seconds_count{method="GET",route="/api/stats"} 3.0
+campuscrate_http_request_duration_seconds_sum{method="GET",route="/api/stats"} 1.3219562100001667
+# HELP campuscrate_http_request_duration_seconds_created HTTP request duration
+# TYPE campuscrate_http_request_duration_seconds_created gauge
+campuscrate_http_request_duration_seconds_created{method="GET",route="/api/equipment"} 1.7921365251193871e+09
+campuscrate_http_request_duration_seconds_created{method="GET",route="/api/loans"} 1.7921365310198271e+09
+campuscrate_http_request_duration_seconds_created{method="GET",route="/api/stats"} 1.792136587009364e+09
+

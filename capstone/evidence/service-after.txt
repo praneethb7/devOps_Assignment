@@ -1,0 +1,2 @@
+NAME                   ADDRESSTYPE   PORTS   ENDPOINTS                                         AGE
+broken-service-tvtk8   IPv4          8000    10.244.0.28,10.244.0.27,10.244.0.26 + 2 more...   16s

@@ -1,0 +1,21 @@
+NAME                              READY   STATUS      RESTARTS   AGE
+pod/backend-84b8b795b4-75xfr      1/1     Running     0          3m10s
+pod/backend-84b8b795b4-g7d9q      1/1     Running     0          3m10s
+pod/backend-84b8b795b4-jmcx2      1/1     Running     0          4m20s
+pod/backend-84b8b795b4-k49gg      1/1     Running     0          4m26s
+pod/backend-84b8b795b4-ndvqz      1/1     Running     0          3m10s
+pod/campuscrate-migrate-4-w554s   0/1     Completed   0          4m26s
+pod/frontend-5f5fd7466f-5qgq8     1/1     Running     0          8m11s
+pod/frontend-5f5fd7466f-c5lpk     1/1     Running     0          8m11s
+pod/postgres-0                    1/1     Running     0          8m10s
+
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/backend    ClusterIP   10.97.208.109   <none>        8000/TCP   8m11s
+service/frontend   ClusterIP   10.103.25.238   <none>        8080/TCP   8m11s
+service/postgres   ClusterIP   None            <none>        5432/TCP   8m11s
+
+NAME                                    CLASS   HOSTS                   ADDRESS        PORTS   AGE
+ingress.networking.k8s.io/campuscrate   nginx   campuscrate.localhost   192.168.49.2   80      8m10s
+
+NAME                                          REFERENCE            TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/backend   Deployment/backend   cpu: 198%/60%   2         5         5          8m11s

@@ -1,0 +1,6 @@
+tests/architecture.tftest.hcl... in progress
+  run "network_and_cluster_plan"... pass
+tests/architecture.tftest.hcl... tearing down
+tests/architecture.tftest.hcl... pass
+
+Success! 1 passed, 0 failed.

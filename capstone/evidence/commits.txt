@@ -1,0 +1,16 @@
+d6fd85b praneethb7 <177663972+praneethb7@users.noreply.github.com> Verify deletion in deployed smoke tests and finalize accurate validation notes
+7b0b44c praneethb7 <177663972+praneethb7@users.noreply.github.com> Document reproducible deployment rubric coverage and presentation walkthrough
+4464b19 praneethb7 <177663972+praneethb7@users.noreply.github.com> Label mobile navigation and support private registry pull secrets
+82ec393 praneethb7 <177663972+praneethb7@users.noreply.github.com> Remove vulnerable Debian runtime and validate infrastructure with provider mocks
+ffd52b5 praneethb7 <177663972+praneethb7@users.noreply.github.com> Clarify fixture location variable for code quality checks
+871d4fb praneethb7 <177663972+praneethb7@users.noreply.github.com> Keep ORM index metadata aligned with migrations and add optional demo fixtures
+03311de praneethb7 <177663972+praneethb7@users.noreply.github.com> Add isolated image and service failures for troubleshooting demonstration
+d366611 praneethb7 <177663972+praneethb7@users.noreply.github.com> Instrument application dashboards alerts and bounded load generation
+029c737 praneethb7 <177663972+praneethb7@users.noreply.github.com> Gate image publication on PostgreSQL tests and Trivy then deploy to Kubernetes
+06a9c20 praneethb7 <177663972+praneethb7@users.noreply.github.com> Define restricted AWS VPC EKS workers and persistent storage infrastructure
+6c30879 praneethb7 <177663972+praneethb7@users.noreply.github.com> Package resilient Kubernetes workloads ingress and CPU autoscaling in Helm
+f6fb090 praneethb7 <177663972+praneethb7@users.noreply.github.com> Containerize all tiers with non-root runtimes and gated migrations
+b4a3953 praneethb7 <177663972+praneethb7@users.noreply.github.com> Build responsive inventory dashboard with borrowing and return workflows
+454edd5 praneethb7 <177663972+praneethb7@users.noreply.github.com> Test lending conflicts returns overdue states and readiness isolation
+ab2dca7 praneethb7 <177663972+praneethb7@users.noreply.github.com> Implement inventory and lending API with transactional stock protection
+0d663e3 praneethb7 <177663972+praneethb7@users.noreply.github.com> Define CampusCrate equipment lending capstone and architecture

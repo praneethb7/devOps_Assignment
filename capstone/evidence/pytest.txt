@@ -1,0 +1,44 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.7, pytest-9.0.2, pluggy-1.7.0 -- /Users/simpliplay/Desktop/devops/devOps_Assignment/capstone/backend/.venv/bin/python3.14
+cachedir: .pytest_cache
+rootdir: /Users/simpliplay/Desktop/devops/devOps_Assignment/capstone/backend
+configfile: pytest.ini
+plugins: anyio-4.15.1, cov-7.0.0
+collecting ... collected 15 items
+
+capstone/backend/tests/test_api.py::test_health_and_ready PASSED         [  6%]
+capstone/backend/tests/test_api.py::test_equipment_lifecycle PASSED      [ 13%]
+capstone/backend/tests/test_api.py::test_search PASSED                   [ 20%]
+capstone/backend/tests/test_api.py::test_invalid_inventory PASSED        [ 26%]
+capstone/backend/tests/test_api.py::test_borrow_return_updates_availability PASSED [ 33%]
+capstone/backend/tests/test_api.py::test_prevent_overbooking PASSED      [ 40%]
+capstone/backend/tests/test_api.py::test_reject_past_due_date PASSED     [ 46%]
+capstone/backend/tests/test_api.py::test_require_timezone PASSED         [ 53%]
+capstone/backend/tests/test_api.py::test_return_twice_is_conflict PASSED [ 60%]
+capstone/backend/tests/test_api.py::test_keep_loan_history PASSED        [ 66%]
+capstone/backend/tests/test_api.py::test_cannot_reduce_below_borrowed_quantity PASSED [ 73%]
+capstone/backend/tests/test_api.py::test_missing_resources PASSED        [ 80%]
+capstone/backend/tests/test_api.py::test_overdue_status PASSED           [ 86%]
+capstone/backend/tests/test_api.py::test_metrics PASSED                  [ 93%]
+capstone/backend/tests/test_api.py::test_readiness_failure PASSED        [100%]
+
+=============================== warnings summary ===============================
+capstone/backend/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1
+  /Users/simpliplay/Desktop/devops/devOps_Assignment/capstone/backend/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.14.7-final-0 _______________
+
+Name                               Stmts   Miss  Cover   Missing
+----------------------------------------------------------------
+capstone/backend/app/__init__.py       0      0   100%
+capstone/backend/app/database.py      10      2    80%   12-13
+capstone/backend/app/main.py         120      0   100%
+capstone/backend/app/models.py        21      0   100%
+capstone/backend/app/schemas.py       13      0   100%
+capstone/backend/app/seed.py          16     16     0%   2-26
+----------------------------------------------------------------
+TOTAL                                180     18    90%
+======================== 15 passed, 1 warning in 0.16s =========================
