@@ -2,7 +2,7 @@
 
 ## Completed
 
-- 15 API tests passed locally with **99% application statement coverage**. The production DB is not used by tests.
+- 15 API tests passed locally with **90% overall statement coverage** (99% for the core API modules; optional sample-data script included in the overall figure). The production DB is not used by tests.
 - CI tests passed against isolated PostgreSQL, with Ruff checks and Alembic upgrade/check/downgrade/upgrade.
 - React production build passed. Browser interactions created equipment, borrowed a unit and returned it with correct availability changes.
 - Both Docker images built. Compose PostgreSQL, backend and frontend reported healthy; migration container exited successfully.

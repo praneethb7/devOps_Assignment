@@ -13,7 +13,7 @@ def worker():
     ok = errors = 0
     while time.monotonic() < end:
         try:
-            with urlopen(Request(url, headers={"Host": os.environ.get("HOST_HEADER", "127.0.0.1")}), timeout=5) as response:
+            with urlopen(Request(url, headers=({"Host": os.environ["HOST_HEADER"]} if "HOST_HEADER" in os.environ else {})), timeout=5) as response:
                 response.read()
             ok += 1
         except Exception:

@@ -20,4 +20,8 @@ assert request(f"/api/loans/{loan['id']}/return", "PUT")["status"] == "Returned"
 updated = request(f"/api/equipment/{item['id']}", "PUT", {"name": "Smoke-test camera", "category": "Electronics", "quantity": 2, "location": "CI lab"})
 assert updated["available"] == 2
 assert request("/api/stats")["available"] >= 2
-print("PASS: create, borrow, return, update, list and aggregate through frontend proxy")
+assert any(row["id"] == item["id"] and row["available"] == 2 for row in request("/api/equipment"))
+disposable = request("/api/equipment", "POST", {"name": "Disposable smoke fixture", "category": "Lab", "quantity": 1, "location": "CI lab"})
+request(f"/api/equipment/{disposable['id']}", "DELETE")
+assert not any(row["id"] == disposable["id"] for row in request("/api/equipment"))
+print("PASS: create, borrow, return, update, list, delete and aggregate through frontend proxy")
