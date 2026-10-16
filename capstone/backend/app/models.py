@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import DateTime, ForeignKey, Integer, String, CheckConstraint
+from sqlalchemy import DateTime, ForeignKey, Integer, String, CheckConstraint, Index
 from sqlalchemy.orm import Mapped, mapped_column
 from .database import Base
 
@@ -14,6 +14,7 @@ class Equipment(Base):
 
 class Loan(Base):
     __tablename__ = "loans"
+    __table_args__ = (Index("ix_loans_equipment_returned", "equipment_id", "returned_at"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     equipment_id: Mapped[int] = mapped_column(ForeignKey("equipment.id", ondelete="RESTRICT"))
     borrower: Mapped[str] = mapped_column(String(120))
