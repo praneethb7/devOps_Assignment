@@ -1,12 +1,12 @@
-FROM python:3.12-slim AS builder
+FROM python:3.12-alpine AS builder
 ENV PIP_NO_CACHE_DIR=1
 WORKDIR /build
 COPY requirements.txt .
 RUN pip install --prefix=/install -r requirements.txt
 
-FROM python:3.12-slim
+FROM python:3.12-alpine
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-RUN groupadd --gid 10001 app && useradd --uid 10001 --gid app --no-create-home app
+RUN addgroup -g 10001 app && adduser -D -u 10001 -G app app
 WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY --chown=10001:10001 app ./app

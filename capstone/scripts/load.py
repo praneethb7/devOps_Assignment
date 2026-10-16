@@ -1,8 +1,9 @@
 """Bounded HTTP load. Usage: python scripts/load.py URL [seconds] [workers]."""
 import concurrent.futures
 import sys
+import os
 import time
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 url = (sys.argv[1] if len(sys.argv)>1 else "http://localhost:3000") + "/api/equipment"
 seconds = min(int(sys.argv[2]) if len(sys.argv)>2 else 120, 600)
 workers = min(int(sys.argv[3]) if len(sys.argv)>3 else 8, 32)
@@ -12,7 +13,7 @@ def worker():
     ok = errors = 0
     while time.monotonic() < end:
         try:
-            with urlopen(url, timeout=5) as response:
+            with urlopen(Request(url, headers={"Host": os.environ.get("HOST_HEADER", "127.0.0.1")}), timeout=5) as response:
                 response.read()
             ok += 1
         except Exception:

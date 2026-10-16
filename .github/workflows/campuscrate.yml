@@ -59,6 +59,7 @@ jobs:
           terraform -chdir=capstone/terraform fmt -check
           terraform -chdir=capstone/terraform init -backend=false
           terraform -chdir=capstone/terraform validate
+          terraform -chdir=capstone/terraform test
       - uses: actions/upload-artifact@v4
         if: always()
         with: {name: test-results, path: capstone/backend/results.xml}

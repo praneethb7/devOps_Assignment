@@ -23,7 +23,7 @@ database:
 ingress:
   enabled: true
   className: nginx
-  host: campuscrate.local
+  host: campuscrate.localhost
   tls: []
 autoscaling:
   enabled: true
