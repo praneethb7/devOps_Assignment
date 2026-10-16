@@ -2,9 +2,9 @@
 
 ## Final capstone — CampusCrate
 
-The original final project is **[CampusCrate](capstone/)**: campus equipment inventory, borrowing, returns and overdue tracking, with React, FastAPI, PostgreSQL, Docker, GitHub Actions, Trivy, GHCR, Terraform, Kubernetes, Helm, Ingress, HPA and Prometheus/Grafana.
+The original final project is **[CampusCrate](https://github.com/praneethb7/CampusCrate)**: campus equipment inventory, borrowing, returns and overdue tracking, with React, FastAPI, PostgreSQL, Docker, GitHub Actions, Trivy, GHCR, Terraform, Kubernetes, Helm, Ingress, HPA and Prometheus/Grafana.
 
-Open the **[capstone README](capstone/README.md)** for run instructions, **[submission checklist](capstone/docs/SUBMISSION.md)** for rubric mapping and **[evidence](capstone/evidence/)** for verified results. AWS infrastructure is prepared and validated as code; real AWS provisioning was intentionally not performed.
+Use the standalone **[CampusCrate repository](https://github.com/praneethb7/CampusCrate)** for final submission, **[its README](https://github.com/praneethb7/CampusCrate#readme)** for run instructions and **[requirements audit](https://github.com/praneethb7/CampusCrate/blob/main/docs/RUBRIC-AUDIT.md)** for verified coverage. The `capstone/` directory here retains the earlier project snapshot. AWS infrastructure is prepared and validated as code; real AWS provisioning was intentionally not performed.
 
 ---
 
